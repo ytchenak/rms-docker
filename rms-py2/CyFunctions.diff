@@ -1,0 +1,20 @@
+diff --git a/RMS/Astrometry/CyFunctions.pyx b/RMS/Astrometry/CyFunctions.pyx
+index 3dc5682..01795dd 100644
+--- a/RMS/Astrometry/CyFunctions.pyx
++++ b/RMS/Astrometry/CyFunctions.pyx
+@@ -14,7 +14,7 @@ ctypedef np.float64_t FLOAT_TYPE_t
+ 
+ 
+ # Define Pi
+-cdef double pi = np.pi
++cdef double pi = 3.14  #np.pi
+ 
+ # Declare math functions
+ cdef extern from "math.h":
+@@ -415,4 +415,4 @@ def cyRaDecToCorrectedXY(np.ndarray[FLOAT_TYPE_t, ndim=1] RA_data, np.ndarray[FL
+         y_array[i] = Y1 - dY + y_res/2.0
+ 
+ 
+-    return x_array, y_array
+\ No newline at end of file
++    return x_array, y_array
