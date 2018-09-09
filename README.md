@@ -7,9 +7,9 @@ cd rms-py3
 docker build -t rms-py3 .
 ```
 
-## export /usr to host computer c:\TEMP directory
+## export files to host computer 
 ```
-docker run --rm -vC:\TEMP:/tmp -it rms-py3 tar cvzf /tmp/usr3.tar.gz /usr
+docker run --rm -v<host temp dir>:/tmp -it rms-py3 tar cvzf /tmp/usr3.tar.gz /usr
 
 ```
 
@@ -19,7 +19,7 @@ sftp pi@<raspberrypi IP>
 put usr3.tar.gz 
 ```
 
-## extract the tar to /usr
+## extract the tar to raspberrypi root directory
 ```
 ssh pi@<raspberrypi IP>
 sudo bash
