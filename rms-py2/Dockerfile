@@ -8,6 +8,7 @@ RUN apt-get install wget unzip
 
 RUN apt-get install git
 
+# TODO: remove
 RUN cd /usr/src && git clone "https://github.com/CroatianMeteorNetwork/RMS.git" --depth 1
 WORKDIR /usr/src/RMS
 
@@ -37,14 +38,30 @@ RUN pip install astropy==2.0.8
 RUN apt-get install libblas-dev liblapack-dev gfortran 
 RUN pip install scipy
 
-RUN cd /usr/src/RMS && python setup.py install
+RUN apt-get install vim
+RUN rm -rf /usr/src/opencv*
 
-#patch np.pi 
-COPY CyFunctions.diff /usr/src/RMS
+
+# add pi user and root to sudusers list
+RUN useradd -d /home/pi -p pi -m pi \
+	&& echo 'root ALL=(ALL) ALL' >> /etc/sudoers \
+	&& echo 'pi ALL=(ALL) NOPASSWD: ALL' >> /etc/sudoers
+
+USER pi
+WORKDIR /home/pi
+
+RUN git clone "https://github.com/CroatianMeteorNetwork/RMS.git" 
+WORKDIR /home/pi/RMS
+
+#patch -- by some reason assigning np.pi to double variable case crash. 
+COPY CyFunctions.diff .
 RUN patch -i CyFunctions.diff -p 1
+
+
+RUN sudo python setup.py install
 
 
 RUN python -m RMS.StartCapture --help
 
-RUN apt-get install vim
-RUN rm -rf /usr/src/opencv*
+
+

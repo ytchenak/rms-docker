@@ -1,30 +1,36 @@
 # rms-docker
 Docker for RMS project
 
-## build docker 
+## build docker image
 ```
 cd rms-py3
 docker build -t rms-py3 .
 ```
 
-## export /usr to host computer c:\TEMP directory
+## run container 
 ```
-docker run --rm -vC:\TEMP:/tmp -it rms-py3 tar cvzf /tmp/usr3.tar.gz /usr
+docker run --rm  -it rms-py3 bash
+```
+
+
+## export /usr and /home/pi to host computer's c:\TEMP directory
+```
+docker run --rm -vC:\TEMP:/tmp -it rms-py3 tar cvzf /tmp/rms-py3.tar.gz /usr
 
 ```
 
 ## copy the tar to raspberrypi
 ```
 sftp pi@<raspberrypi IP>
-put usr3.tar.gz 
+put rms-py3.tar.gz 
 ```
 
-## extract the tar to /usr
+## extract the tar to /usr of raspberrypi
 ```
 ssh pi@<raspberrypi IP>
 sudo bash
 cd /
-tar xvf /home/pi/usr3.tar.gz
+tar xvf /home/pi/urms-py3.tar.gz
 
 ldconfig
 exit

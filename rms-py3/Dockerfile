@@ -60,7 +60,7 @@ RUN pip install numpy
 RUN ldconfig
 #=============================================================================================
 
-
+# TODO: remove
 RUN cd /usr/src && git clone "https://github.com/CroatianMeteorNetwork/RMS.git" --depth 1
 WORKDIR /usr/src/RMS
 
@@ -86,14 +86,25 @@ RUN pip install astropy
 RUN apt-get install libblas-dev liblapack-dev gfortran 
 RUN pip install scipy
 
-RUN cd /usr/src/RMS && python3 setup.py install
+
+RUN rm -rf /usr/src/opencv*
+
+RUN apt-get install vim
 
 
-# #patch np.pi 
-# COPY CyFunctions.diff /usr/src/RMS
-# RUN patch -i CyFunctions.diff -p 1
+# add pi user and root to sudusers list
+RUN useradd -d /home/pi -p pi -m pi \
+	&& echo 'root ALL=(ALL) ALL' >> /etc/sudoers \
+	&& echo 'pi ALL=(ALL) NOPASSWD: ALL' >> /etc/sudoers
+
+USER pi
+WORKDIR /home/pi
+
+RUN git clone "https://github.com/CroatianMeteorNetwork/RMS.git" 
+
+WORKDIR /home/pi/RMS
+RUN sudo python3 setup.py install
+
 
 RUN python3 -m RMS.StartCapture --help
 
-RUN apt-get install vim
-RUN rm -rf /usr/src/opencv*
