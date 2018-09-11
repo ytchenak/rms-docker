@@ -51,7 +51,7 @@ RUN make -j8
 RUN make install
 
 # copy cv2.so
-RUN cp ./lib/python3/cv2.cpython-34m.so /usr/local/lib/python3.6/site-packages/cv2.so
+RUN cp ./lib/python3/cv2.cpython-37m-arm-linux-gnueabihf.so /usr/local/lib/python3.7/site-packages/cv2.so
 
 RUN apt-get purge python3-numpy 
 RUN pip install numpy 
