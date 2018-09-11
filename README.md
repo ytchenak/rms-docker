@@ -14,7 +14,7 @@ docker run --rm  -it rms-py37 bash
 
 ## export files to host computer 
 ```
-docker run --rm -v<host temp dir>:/tmp -it rms-py37 tar cvzf /tmp/rms37.tar.gz /usr /home/pi
+docker run --rm -v<host temp dir>:/tmp -it rms-py37 tar cvzf /tmp/rms37.tar.gz /usr /etc/alternatives /home/pi
 
 ```
 
