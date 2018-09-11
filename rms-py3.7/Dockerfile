@@ -1,3 +1,4 @@
+# debian is used instead raspbian because 'illegal instruction' error while importing cv2 into python.
 # FROM resin/rpi-raspbian:stretch
 FROM resin/raspberrypi3-debian:stretch
 
