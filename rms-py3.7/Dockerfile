@@ -93,7 +93,7 @@ USER pi
 WORKDIR /home/pi
 
 #=============================================================================================
-ENV vRMS=${HOME_DIR}/vRMS
+ENV vRMS=${HOME}/vRMS
 RUN python3 -m venv ${vRMS}
 
 RUN ${vRMS}/bin/pip install --upgrade setuptools
@@ -126,22 +126,22 @@ RUN ${vRMS}/bin/pip install numpy
 
 ENV OPENCV_VERSION 3.4.5
 
-RUN cd ${HOME_DIR} \
+RUN cd ${HOME} \
 	&& wget --no-verbose -O opencv.zip https://github.com/Itseez/opencv/archive/${OPENCV_VERSION}.zip \
 	&& unzip -q opencv.zip \
 	&& wget --no-verbose -O opencv_contrib.zip https://github.com/Itseez/opencv_contrib/archive/${OPENCV_VERSION}.zip \
 	&& unzip -q opencv_contrib.zip 
 
-RUN cd ${HOME_DIR}/opencv-${OPENCV_VERSION}/  \
+RUN cd ${HOME}/opencv-${OPENCV_VERSION}/  \
 	&& mkdir build 
 
-WORKDIR ${HOME_DIR}/opencv-${OPENCV_VERSION}/build
+WORKDIR ${HOME}/opencv-${OPENCV_VERSION}/build
 
 RUN cmake -D CMAKE_BUILD_TYPE=RELEASE \
 	    -D CMAKE_INSTALL_PREFIX=${vRMS}/local \
 	    -D INSTALL_PYTHON_EXAMPLES=OFF \
 	    -D INSTALL_C_EXAMPLES=OFF \
-	    -D OPENCV_EXTRA_MODULES_PATH=${HOME_DIR}/opencv_contrib-${OPENCV_VERSION}/modules \
+	    -D OPENCV_EXTRA_MODULES_PATH=${HOME}/opencv_contrib-${OPENCV_VERSION}/modules \
 	    -D BUILD_EXAMPLES=OFF \
 		-D ENABLE_NEON=ON \
     	-D ENABLE_VFPV3=ON \
@@ -153,12 +153,12 @@ RUN cmake -D CMAKE_BUILD_TYPE=RELEASE \
 RUN make -j8
 RUN make install
 RUN sudo ldconfig
-RUN rm -rf ${HOME_DIR}/opencv*
+RUN rm -rf ${HOME}/opencv*
 #-------------------------------------------------------------------------------------------
 
 
-RUN git clone https://github.com/CroatianMeteorNetwork/RMS.git ${HOME_DIR}/source/RMS 
-WORKDIR ${HOME_DIR}/source/RMS
+RUN git clone https://github.com/CroatianMeteorNetwork/RMS.git ${HOME}/source/RMS 
+WORKDIR ${HOME}/source/RMS
 
 #RUN python3 setup.py install
 
