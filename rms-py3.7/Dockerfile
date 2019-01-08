@@ -1,6 +1,6 @@
 # debian is used instead raspbian because 'illegal instruction' error while importing cv2 into python.
-# FROM resin/rpi-raspbian:stretch
-FROM resin/raspberrypi3-debian:stretch
+FROM resin/rpi-raspbian:stretch
+# FROM resin/raspberrypi3-debian:stretch
 
 # ensure local python is preferred over distribution python
 ENV PATH /usr/local/bin:$PATH
@@ -11,11 +11,11 @@ ENV LANG C.UTF-8
 
 RUN apt-get update 
 RUN apt-get install libffi-dev libbz2-dev liblzma-dev libsqlite3-dev libncurses5-dev libgdbm-dev zlib1g-dev libreadline-dev libssl-dev tk-dev build-essential libncursesw5-dev libc6-dev openssl git
-RUN apt-get install wget
+RUN apt-get install wget vim
 
 
 ENV GPG_KEY 0D96DF4D4110E5C43FBFB17F2D347EA6AA65421D
-ENV PYTHON_VERSION 3.7.0
+ENV PYTHON_VERSION 3.7.2
 
 
 RUN set -ex \
@@ -103,7 +103,7 @@ RUN apt-get install libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev
 
 RUN pip install numpy
 
-ENV OPENCV_VERSION 3.4.3 
+ENV OPENCV_VERSION 3.4.5
 
 RUN cd /usr/src \
 	&& wget --no-verbose -O opencv.zip https://github.com/Itseez/opencv/archive/${OPENCV_VERSION}.zip \
@@ -137,31 +137,19 @@ RUN ldconfig
 RUN rm -rf /usr/src/opencv*
 
 #=============================================================================================
-RUN pip install gitpython
-
+# paramiko
 RUN apt-get install libffi-dev
-RUN pip install paramiko
 
-RUN apt-get install libfreetype6-dev
-RUN apt-get install pkg-config
-RUN pip install matplotlib
+# matplotlib
+RUN apt-get install libfreetype6-dev pkg-config
 
-RUN pip install pyephem
-RUN pip install cython
-
-
+# Pillow
 RUN apt-get install libjpeg8-dev
-RUN pip install Pillow
 
-RUN pip install astropy
-
+# scipy
 RUN apt-get install libblas-dev liblapack-dev gfortran 
-RUN pip install scipy
 
-
-RUN apt-get install vim
-
-
+#=============================================================================================
 # add pi user and root to sudusers list
 RUN useradd -d /home/pi -p pi -m pi \
 	&& echo 'root ALL=(ALL) ALL' >> /etc/sudoers \
@@ -170,11 +158,24 @@ RUN useradd -d /home/pi -p pi -m pi \
 USER pi
 WORKDIR /home/pi
 
-RUN git clone "https://github.com/CroatianMeteorNetwork/RMS.git" 
+#=============================================================================================
+RUN python3 -m venv vRMS
+RUN /bin/bash -c "source vRMS/bin/activate"
 
-WORKDIR /home/pi/RMS
-RUN sudo python3 setup.py install
+RUN vRMS/bin/pip install gitpython
+RUN vRMS/bin/pip install paramiko
+RUN vRMS/bin/pip install matplotlib
+RUN vRMS/bin/pip install pyephem
+RUN vRMS/bin/pip install cython
+RUN vRMS/bin/pip install Pillow
+RUN vRMS/bin/pip install astropy
+RUN vRMS/bin/pip install --upgrade setuptools
+RUN vRMS/bin/pip install scipy
 
+RUN git clone https://github.com/CroatianMeteorNetwork/RMS.git /home/pi/source/RMS 
+WORKDIR /home/pi/source/RMS
 
-RUN python3 -m RMS.StartCapture --help
+#RUN python3 setup.py install
+
+RUN /home/pi/vRMS/bin/python3 -m RMS.StartCapture --help
 
