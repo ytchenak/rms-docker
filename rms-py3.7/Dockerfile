@@ -90,7 +90,8 @@ RUN useradd -d /home/pi -p pi -m pi \
 	&& echo 'pi ALL=(ALL) NOPASSWD: ALL' >> /etc/sudoers
 
 USER pi
-WORKDIR /home/pi
+ENV HOME_DIR=/home/pi
+WORKDIR ${HOME_DIR}
 
 #=============================================================================================
 ENV vRMS=${HOME_DIR}/vRMS
