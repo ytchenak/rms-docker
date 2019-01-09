@@ -97,9 +97,12 @@ WORKDIR ${HOME_DIR}
 ENV vRMS=${HOME_DIR}/vRMS
 RUN python3 -m venv ${vRMS}
 
+
 RUN ${vRMS}/bin/pip install --upgrade setuptools
+
+RUN ${vRMS}/bin/pip install numpy
+
 RUN ${vRMS}/bin/pip install gitpython
-RUN sudo apt-get install libffi-dev
 RUN ${vRMS}/bin/pip install paramiko
 RUN sudo apt-get install libfreetype6-dev pkg-config
 RUN ${vRMS}/bin/pip install matplotlib
@@ -116,6 +119,7 @@ RUN ${vRMS}/bin/pip install scipy
 
 RUN sudo apt-get install build-essential cmake pkg-config
 RUN sudo apt-get install libjpeg-dev libtiff5-dev libjasper-dev libpng12-dev
+RUN sudo apt-get update 
 RUN sudo apt-get install libavcodec-dev libavformat-dev libswscale-dev libv4l-dev libxvidcore-dev libx264-dev
 RUN sudo apt-get install libgtk2.0-dev
 RUN sudo apt-get install libatlas-base-dev gfortran
@@ -123,26 +127,24 @@ RUN sudo apt-get install libatlas-base-dev gfortran
 # to enable gsstream
 RUN sudo apt-get install libgstreamer1.0-dev libgstreamer-plugins-base1.0-dev
 
-RUN ${vRMS}/bin/pip install numpy
-
 ENV OPENCV_VERSION 3.4.5
 
-RUN cd {HOME_DIR} \
+RUN cd ${HOME_DIR} \
 	&& wget --no-verbose -O opencv.zip https://github.com/Itseez/opencv/archive/${OPENCV_VERSION}.zip \
 	&& unzip -q opencv.zip \
 	&& wget --no-verbose -O opencv_contrib.zip https://github.com/Itseez/opencv_contrib/archive/${OPENCV_VERSION}.zip \
 	&& unzip -q opencv_contrib.zip 
 
-RUN cd {HOME_DIR}/opencv-${OPENCV_VERSION}/  \
+RUN cd ${HOME_DIR}/opencv-${OPENCV_VERSION}/  \
 	&& mkdir build 
 
-WORKDIR {HOME_DIR}/opencv-${OPENCV_VERSION}/build
+WORKDIR ${HOME_DIR}/opencv-${OPENCV_VERSION}/build
 
 RUN cmake -D CMAKE_BUILD_TYPE=RELEASE \
 	    -D CMAKE_INSTALL_PREFIX=${vRMS}/local \
 	    -D INSTALL_PYTHON_EXAMPLES=OFF \
 	    -D INSTALL_C_EXAMPLES=OFF \
-	    -D OPENCV_EXTRA_MODULES_PATH={HOME_DIR}/opencv_contrib-${OPENCV_VERSION}/modules \
+	    -D OPENCV_EXTRA_MODULES_PATH=${HOME_DIR}/opencv_contrib-${OPENCV_VERSION}/modules \
 	    -D BUILD_EXAMPLES=OFF \
 		-D ENABLE_NEON=ON \
     	-D ENABLE_VFPV3=ON \
@@ -154,7 +156,7 @@ RUN cmake -D CMAKE_BUILD_TYPE=RELEASE \
 RUN make -j8
 RUN make install
 RUN sudo ldconfig
-RUN rm -rf {HOME_DIR}/opencv*
+RUN rm -rf ${HOME_DIR}/opencv*
 #-------------------------------------------------------------------------------------------
 
 
