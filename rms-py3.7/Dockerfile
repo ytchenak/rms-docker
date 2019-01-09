@@ -140,6 +140,7 @@ RUN cd ${HOME_DIR}/opencv-${OPENCV_VERSION}/  \
 
 WORKDIR ${HOME_DIR}/opencv-${OPENCV_VERSION}/build
 
+ENV PATH=${vRMS}/bin:${PATH}
 RUN cmake -D CMAKE_BUILD_TYPE=RELEASE \
 	    -D CMAKE_INSTALL_PREFIX=${vRMS}/local \
 	    -D INSTALL_PYTHON_EXAMPLES=OFF \
@@ -160,10 +161,11 @@ RUN rm -rf ${HOME_DIR}/opencv*
 #-------------------------------------------------------------------------------------------
 
 
-RUN git clone https://github.com/CroatianMeteorNetwork/RMS.git {HOME_DIR}/source/RMS 
-WORKDIR {HOME_DIR}/source/RMS
+RUN git clone https://github.com/CroatianMeteorNetwork/RMS.git ${HOME_DIR}/source/RMS 
+WORKDIR ${HOME_DIR}/source/RMS
 
-#RUN python3 setup.py install
+ENV PYTHONPATH=${vRMS}/local/lib/python3.7/site-packages:$PYTHONPATH
 
 RUN ${vRMS}/bin/python3 -m RMS.StartCapture --help
+
 
