@@ -14,10 +14,10 @@ docker run --rm  -it rms-py37 bash
 
 ## export files to host computer 
 ```
-docker run --rm -v<host temp dir>:/tmp -it rms-py37 tar cvzf /tmp/rms37.tar.gz /usr /etc/alternatives /home/pi
+docker run --rm -v<host temp dir>:/export -it rms-py37 tar cvzf /export/rms-py37.tar.gz /usr /etc/alternatives /home/pi
 
 ```
-
+Note: for Docker on Windows you need enable shared drivers and set credential (Reset Credential)
 ## copy the tar to raspberrypi
 ```
 sftp pi@<raspberrypi IP>
@@ -27,8 +27,7 @@ put rms-py37.tar.gz
 ## extract the tar to raspberrypi root directory
 ```
 ssh pi@<raspberrypi IP>
-sudo bash
-cd /
+sudo su -
 tar xvf /home/pi/rms-py37.tar.gz
 
 ldconfig

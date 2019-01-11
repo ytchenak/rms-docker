@@ -2,14 +2,11 @@
 # FROM resin/rpi-raspbian:stretch
 FROM resin/raspberrypi3-debian:stretch
 
-# ensure local python is preferred over distribution python
-ENV PATH /usr/local/bin:$PATH
-
 # http://bugs.python.org/issue19846
 # > At the moment, setting "LANG=C" on a Linux system *fundamentally breaks Python 3*, and that's not OK.
 ENV LANG C.UTF-8
 
-RUN apt-get update 
+RUN apt-get update && apt-get upgrade
 RUN apt-get install libffi-dev libbz2-dev liblzma-dev libsqlite3-dev libncurses5-dev libgdbm-dev zlib1g-dev libreadline-dev libssl-dev tk-dev build-essential libncursesw5-dev libc6-dev openssl git
 RUN apt-get install wget unzip vim
 
@@ -63,7 +60,6 @@ RUN cd /usr/local/bin \
 ENV PYTHON_PIP_VERSION 18.0
 
 
-
 RUN set -ex; \
 	\
 	wget --no-verbose -O get-pip.py 'https://bootstrap.pypa.io/get-pip.py'; \
@@ -94,25 +90,26 @@ ENV HOME_DIR=/home/pi
 WORKDIR ${HOME_DIR}
 
 #=============================================================================================
+# create python virtual environment and put it in path as current
 ENV vRMS=${HOME_DIR}/vRMS
 RUN python3 -m venv ${vRMS}
+ENV PATH=${vRMS}/bin:${PATH}
+#=============================================================================================
 
+RUN pip install --upgrade setuptools
 
-RUN ${vRMS}/bin/pip install --upgrade setuptools
-
-RUN ${vRMS}/bin/pip install numpy
-
-RUN ${vRMS}/bin/pip install gitpython
-RUN ${vRMS}/bin/pip install paramiko
+RUN pip install numpy
+RUN pip install gitpython
+RUN pip install paramiko
 RUN sudo apt-get install libfreetype6-dev pkg-config
-RUN ${vRMS}/bin/pip install matplotlib
-RUN ${vRMS}/bin/pip install pyephem
-RUN ${vRMS}/bin/pip install cython
+RUN pip install matplotlib
+RUN pip install pyephem
+RUN pip install cython
 RUN sudo apt-get install libjpeg8-dev
-RUN ${vRMS}/bin/pip install Pillow
-RUN ${vRMS}/bin/pip install astropy
+RUN pip install Pillow
+RUN pip install astropy
 RUN sudo apt-get install libblas-dev liblapack-dev gfortran 
-RUN ${vRMS}/bin/pip install scipy
+RUN pip install scipy
 
 
 #-------------------------------------------------------------------------------------------
@@ -140,7 +137,6 @@ RUN cd ${HOME_DIR}/opencv-${OPENCV_VERSION}/  \
 
 WORKDIR ${HOME_DIR}/opencv-${OPENCV_VERSION}/build
 
-ENV PATH=${vRMS}/bin:${PATH}
 RUN cmake -D CMAKE_BUILD_TYPE=RELEASE \
 	    -D CMAKE_INSTALL_PREFIX=${vRMS}/local \
 	    -D INSTALL_PYTHON_EXAMPLES=OFF \
@@ -157,6 +153,10 @@ RUN cmake -D CMAKE_BUILD_TYPE=RELEASE \
 RUN make -j8
 RUN make install
 RUN sudo ldconfig
+
+#need to import cv2
+ENV PYTHONPATH=${vRMS}/local/lib/python3.7/site-packages:$PYTHONPATH
+
 RUN rm -rf ${HOME_DIR}/opencv*
 #-------------------------------------------------------------------------------------------
 
@@ -164,8 +164,7 @@ RUN rm -rf ${HOME_DIR}/opencv*
 RUN git clone https://github.com/CroatianMeteorNetwork/RMS.git ${HOME_DIR}/source/RMS 
 WORKDIR ${HOME_DIR}/source/RMS
 
-ENV PYTHONPATH=${vRMS}/local/lib/python3.7/site-packages:$PYTHONPATH
 
-RUN ${vRMS}/bin/python3 -m RMS.StartCapture --help
+RUN python3 -m RMS.StartCapture --help
 
 
